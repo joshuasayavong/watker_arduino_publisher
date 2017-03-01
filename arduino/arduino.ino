@@ -1,12 +1,11 @@
-
-
 #define test_output
 #define XPIN 1
 #define YPIN 2
 #define GPIN 3
-#define MAIN_LED = 13;
+#define MAIN_LED 13
 #define ID 0x01
-#define START_BYTE 0XAB
+#define START_BYTE1 0XAB
+#define START_BYTE2 0xCD
 
 
 void calibrate(){
@@ -19,31 +18,24 @@ void setup () {
 }
 
 byte get_data(byte pin){
+
+#ifdef test_output
+  byte strain = 0xAD;
+#endif
+
+#ifndef test_output
   byte strain = byte(anlaogRead(pin)/4);
-  return
+#endif
+
+  return strain;
 }
 
 
 void loop() {
-  
-  #ifdef test_output
-  for (int i = 0; i<10; i++){
-    byte buffer = {
-       START_BYTE,
-       ID,
-       i,
-       i+1,
-       i+2};
-    Serial.write(buffer, sizeof(buffer));
-    delay(500);
-  }
-  delay(5000);
-  
-  #endif
-  
-  #ifndef testoutput
-  byte buffer[5] = {
-   START_BYTE,
+ 
+  byte buffer[6] = {
+   START_BYTE1,
+   START_BYTE2,
    ID,
    get_data(XPIN),
    get_data(YPIN),
@@ -51,7 +43,6 @@ void loop() {
  };
  
  Serial.write(buffer,sizeof(buffer));
- delay(500);
- #endif
+ delay(100);
  
 }
