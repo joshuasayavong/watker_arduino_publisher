@@ -4,7 +4,7 @@ import rospy
 from handle_input.msg import StressState
 
 def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + ": I heard  %s", data.data)
+    rospy.loginfo(rospy.get_caller_id() + ": I heard  %s", data)
 
 def listener():
     rospy.init_node('handle_subscriber', anonymous=True)

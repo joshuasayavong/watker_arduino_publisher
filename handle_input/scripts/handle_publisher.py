@@ -1,47 +1,59 @@
-from __future__ import print_function
 
 import time
-import pygatt
-import logging
 import binascii
 import sys
 
 import rospy
 from handle_input.msg import StressState
+from bluepy import btle
 
-adapter = pygatt.GATTToolBackend()
-
-def setup_BT(mac):
-    adapter.start()
-    device = adapter.connect(mac, 10)
-    device.subscribe( "0000dfb1-0000-1000-8000-00805f9b34fb", printMessage, True)
-
-
-
-def printMessage(handle, val):
+class MyDelegate(btle.DefaultDelegate):
+    def __init__(self):
+        btle.DefaultDelegate.__init__(self)
+        # ... initialise here
     
-    if len(val) !=  6 or val[0] != 0xab or val[1] != 0xcd:
-        print("Noise")
-        return
+    def parse_input(self,data):
+        a = bytearray()
+        for i in data:
+            a.append(bytes(i))
+        return a
     
-    print("Found sensor value")    
-    sensor_value = StressState()
-    sensor_value.id = val[2]
-    sensor_value.x = val[3]
-    sensor_value.y = val[4]
-    sensor_value.grip = val[5]
+    def handleNotification(self, cHandle, data):
+        print("Handle: " +  str(cHandle))
+        
+        data_array = self.parse_input(data)
+        
+        if len(data) !=  6 or data_array[0] != 0xab or data_array[1] != 0xcd :
+            print("Noise")
+            s = ""
+            for i in data_array:
+                s = s + " " + str(i)
+            print(s)
+            return
+    
+        sensor_value = StressState()
+        sensor_value.id = float(data_array[2])
+        sensor_value.x = float(data_array[3])
+        sensor_value.y = float(data_array[4])
+        sensor_value.grip = float(data_array[5])
 
-    rospy.loginfo(msg)
-    global pub
-    pub.publish(val)
+        rospy.loginfo(sensor_value)
+        global pub
+        pub.publish(sensor_value)
 
+    
 def talker():
     global pub 
-    pub = rospy.Publisher('handle', String, queue_size=10)
+    pub = rospy.Publisher('handle', StressState, queue_size=10)
     rospy.init_node('handle_publisher', anonymous=True)
     rate = rospy.Rate(10)
 
     while not rospy.is_shutdown():
+        if p.waitForNotifications(1.0):
+        # handleNotification() was called
+            continue
+
+        print("Waiting...")
         rate.sleep()
 
 
@@ -52,10 +64,13 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         mac = 'C8:A0:30:FA:12:9D'
     else:
-        mac = str(argv[1])
+        mac = str(sys.argv[1])
 
     try:
-        setup_BT(mac)
+        address = mac
+        p = btle.Peripheral( address )
+        p.setDelegate( MyDelegate() )
+
     finally:
         time.sleep(1)
 

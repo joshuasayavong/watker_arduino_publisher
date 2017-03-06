@@ -1,33 +1,70 @@
-#define test_output
+//#define test_output
+#define raw_output
 #define XPIN 1
 #define YPIN 2
 #define GPIN 3
 #define MAIN_LED 13
-#define ID 0x01
+#define ID 0x02
 #define START_BYTE1 0XAB
 #define START_BYTE2 0xCD
 
+int datumx;
+int datumy;
+int datumg;
 
 void calibrate(){
+  int x = 0;
+  int y = 0;
+  int g = 0;
+  for (int i = 0; i<10; i++)
+  {
+    x += analogRead(XPIN);
+    y += analogRead(YPIN);
+    g += analogRead(GPIN);
+  }
+  x /= 10;
+  y /= 10;
+  g /= 10;
   return;
 }
 
 void setup () {
   pinMode(MAIN_LED, OUTPUT);
+  Serial.begin(9600);
   calibrate();
 }
 
 byte get_data(byte pin){
-
+  
 #ifdef test_output
-  byte strain = 0xAD;
+  byte stress = 0xAD;
+#endif
+
+#ifdef raw_output
+  return byte(analogRead(pin)/4);
 #endif
 
 #ifndef test_output
-  byte strain = byte(anlaogRead(pin)/4);
+
+  int midpoint;
+  switch (pin) {
+    case XPIN:
+      midpoint = datumx;
+      break;
+    case YPIN:
+      midpoint = datumy;
+      break;
+    case GPIN:
+      midpoint = datumg;
+      break;
+  }
+  
+  byte bmidpoint = 0xFF/2;
+  
+  byte stress = bmidpoint + byte((midpoint - analogRead(pin)));
 #endif
 
-  return strain;
+  return stress;
 }
 
 
@@ -43,6 +80,6 @@ void loop() {
  };
  
  Serial.write(buffer,sizeof(buffer));
- delay(100);
+ delay(500);
  
 }
