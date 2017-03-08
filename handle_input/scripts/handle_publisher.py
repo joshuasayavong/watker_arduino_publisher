@@ -19,23 +19,21 @@ class MyDelegate(btle.DefaultDelegate):
         return a
     
     def handleNotification(self, cHandle, data):
-        print("Handle: " +  str(cHandle))
         
         data_array = self.parse_input(data)
         
-        if len(data) !=  6 or data_array[0] != 0xab or data_array[1] != 0xcd :
-            print("Noise")
+        if len(data) !=   or data_array[0] != 0xab or data_array[1] != 0xcd :
             s = ""
             for i in data_array:
                 s = s + " " + str(i)
-            print(s)
+            print("Noise: %s", s)
             return
     
         sensor_value = StressState()
-        sensor_value.id = float(data_array[2])
-        sensor_value.x = float(data_array[3])
-        sensor_value.y = float(data_array[4])
-        sensor_value.grip = float(data_array[5])
+        sensor_value.id = 0xFFFF & (int(data_array[2]) << 4) 
+        sensor_value.x = 0xFFFF & (int(data_array[3]) << 4) & (int(data_array[4]))
+        sensor_value.y = 0xFFFF & (int(data_array[5]) << 4) & (int(data_array[6]))
+        sensor_value.grip = 0xFFFF & (int(data_array[7]) << 4) & (int(data_array[8]))
 
         rospy.loginfo(sensor_value)
         global pub
@@ -50,7 +48,6 @@ def talker():
 
     while not rospy.is_shutdown():
         if p.waitForNotifications(1.0):
-        # handleNotification() was called
             continue
 
         print("Waiting...")

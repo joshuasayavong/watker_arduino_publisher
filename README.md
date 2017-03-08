@@ -1,34 +1,49 @@
 How To Setup Project:
 
-Clone this repository:
+1.Clone this repository:
+
 "git clone https://github.com/joshuasayavong/watker\_arduino\_publisher.git"
 
-Install bluez on your Ubuntu machine, used for BT interfacing: 
+2.Install bluez on your Ubuntu machine, used for BT interfacing: 
+
 "sudo apt-get install bluez"
 
-Install pygatt on pip, used for python to BT interfacing:
-"pip install pygatt"
-"pip install "pygatt[GATTTOOL]""
-"pip install git+https://github.com/peplin/pygatt"
+3.Install bluepy on pip, used for python to BT interfacing:
 
-Create catkin package called "handle\_input" in your ros src folder:
-"cd ~/catkin\_ws/src"
-"catkin\_create\_pkg handle\_input std\_msgs rospy roscpp"
+"pip install bluepy"
 
-Place the correct files in the folder:
-"TBD"
+4.Copy catkin package called "handle\_input" from the git repository in your ros src folder (assume ~/ is ros project directory):
 
-Build the package:
+"cd ~/src"
+
+"cp -rf /watker\_arduino\_publisher/handle\_input/ ."
+
+5.Build the package:
+
 "catkin\_make"
 
-Run roscore:
+6.Run roscore:
+
 "roscore"
 
-Upload following arduino file from the following folder:
-"~/arduino/arduino.ino"
+7.Open following arduino file from the following folder:
 
-In another terminal, run the publisher:
-"python handle\_publisher.py {mac-address}"
+"/watker\_arduino\_publisher/arduino/arduino.ino"
 
-In another terminal, run the subscriber:
+8.Change the pre-compiled property values for the arduino.ino file to the arduino specs:
+
+"XPIN, YPIN, GPIN, ID"
+
+9.Upload the Arduino file:
+
+"Ctrl-U"
+
+10.In another terminal, run the subscriber:
 "python handle\_subscriber.py"
+
+11.In another terminal, find the mac address of each bluno using the following command:
+
+"sudo hcitool lescan"
+
+12.Run the publishers. Note one publisher is needed for each connected bluno:
+"python handle\_publisher.py {mac-address}"
