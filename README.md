@@ -1,8 +1,12 @@
+Watker Arduino Publisher
+
+This project implements a strain sensor and provides an interface between Arduino and ROS via Bluetooth 4.0 LE. Via the bluepy library, a ROS publisher can be run to listen to various MAC addresses. As a result, the publisher can write to a topic in the ROS domain for signal processing.
+
 How To Setup Project:
 
 1.Clone this repository:
 
-"git clone https://github.com/joshuasayavong/watker\_arduino\_publisher.git"
+"git clone https://github.com/joshuasayavong/watker_arduino_publisher.git"
 
 2.Install bluez on your Ubuntu machine, used for BT interfacing: 
 
