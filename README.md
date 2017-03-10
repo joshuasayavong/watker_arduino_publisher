@@ -35,11 +35,16 @@ Open following arduino file from the following folder:
 ```
 Change the pre-compiled property values for the arduino.ino file to the arduino specs:
 ```
-XPIN, YPIN, GPIN, ID
+SAMPLE_RATE, ID
 ```
 Upload the Arduino file:
 ```
 Ctrl-U
+```
+Configure Arduino baud rate using the following command:
+```
++++ (New Line)
+AT+UART=9600 (CR+NL)
 ```
 In another terminal, run the subscriber:
 ```
