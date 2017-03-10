@@ -22,7 +22,7 @@ class MyDelegate(btle.DefaultDelegate):
         
         data_array = self.parse_input(data)
         
-        if len(data) !=   or data_array[0] != 0xab or data_array[1] != 0xcd :
+        if len(data) != 9  or data_array[0] != 0xab or data_array[1] != 0xcd :
             s = ""
             for i in data_array:
                 s = s + " " + str(i)
