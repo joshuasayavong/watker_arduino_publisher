@@ -1,6 +1,8 @@
 # Watker Arduino Publisher
 
    This project implements a strain sensor and provides an interface between Arduino and ROS via Bluetooth 4.0 LE. Via the bluepy library, a ROS publisher can be run to listen to various MAC addresses. As a result, the publisher can write to a topic in the ROS domain for signal processing.
+   
+   This has been tested with Python 2.7 and ROS Indigo.
 
 ## How To Setup Project:
 
@@ -46,15 +48,17 @@ Configure Arduino baud rate using the following command:
 +++ (New Line)
 AT+UART=9600 (CR+NL)
 ```
-In another terminal, run the subscriber:
+In another terminal, configure the python environment then run the message subscriber:
 ```
-python handle_subscriber.py
+source ~/devel/setup.sh
+python ~/src/handle_input/scripts/handle_subscriber.py
 ```
 In another terminal, find the mac address of each bluno using the following command:
 ```
 sudo hcitool lescan
 ```
-Run the publishers. Note one publisher is needed for each connected bluno:
+Configure the python environment and then run the publishers. Note one publisher is needed for each connected bluno:
 ```
-python handle_publisher.py {mac-address}
+source ~/devel/setup.sh
+python ~/src/handle_input/scripts/handle_publisher.py {mac-address}
 ```
