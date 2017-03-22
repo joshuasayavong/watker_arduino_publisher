@@ -1,5 +1,6 @@
 //Packages
 #include <Servo.h>
+#include <math.h>
 #include <digitalWriteFast.h>
 
 
@@ -15,6 +16,8 @@ Servo gimbal;
 #define DEBUG_MODE
 #define START_BIT_1 0xEF
 #define START_BIT_2 0X02
+#define ID 0X01
+#define WHEEL_RADIUS 5 // in cm
 
 /* Variables for encoder reading */
 
@@ -24,10 +27,10 @@ int time_step = 200 ;
 volatile long l_rev = 0;
 volatile long l_ticks = 0;
 volatile float l_wheelAngle = 0;
+volatile long distLast = 0;
 
 volatile int l_prevStateA = -1;
 volatile int l_prevStateB = -1;
-
 volatile int l_readingA;
 volatile int l_readingB;
 volatile bool l_atHome = false;
@@ -43,21 +46,21 @@ int sensorValue = 0;
 
 */
 
-long l_lastTicks = 0;
-long lastTime= 0;
+volatile long l_lastTicks = 0;
+volatile long lastTime= 0;
 
-long vel_lastTime= 0;
-long vel_currentTime= 0;
-long prevT = 0;
-long currT = 0;
+volatile long vel_lastTime= 0;
+volatile long vel_currentTime= 0;
+volatile long prevT = 0;
+volatile long currT = 0;
 #define TICKS_PER_ROTATION 2048
 
 //Rolling velocity
 #define RV_SIZE 100
-double RV[RV_SIZE];
-double avgV = 0;
-int index = 0;
-long num_ticks=0;
+volatile double RV[RV_SIZE];
+volatile double avgV = 0;
+volatile int index = 0;
+volatile long num_ticks=0;
 
 void increment_index(){
   if (index < RV_SIZE)
@@ -78,6 +81,11 @@ double get_rv ()
   for (int i = 0; i < RV_SIZE; i++)
     sumV += RV[i];
   return (float)(sumV/RV_SIZE)/TICKS_PER_ROTATION;
+}
+
+double get_dist (long x) 
+{
+  return ((double)(x-distLast)/TICKS_PER_ROTATION) * double(2*M_PI*WHEEL_RADIUS*0.1) ;
 }
 
 
@@ -148,6 +156,7 @@ void setup() {
   //setup velocity
   for (int j = 0; j < RV_SIZE; j++)
     RV[j] = 0;
+  distLast = 0;
   vel_currentTime= micros();
   vel_lastTime = micros();
 }
@@ -165,7 +174,7 @@ void loop() {
   
   long currentTime = millis();
   sensorValue = analogRead(A0);
-  if (micros() - vel_lastTime > 1000) 
+  if (micros() - vel_lastTime > 200) 
     update_rv(0);
   
   if(currentTime - lastTime > time_step) {
@@ -180,6 +189,10 @@ void loop() {
       Serial.print(l_wheelAngle);
       Serial.print(", Ticks: ");
       Serial.print(l_ticks);
+      Serial.print(", last: ");
+      Serial.print(distLast);
+      Serial.print(", Dist: ");
+      Serial.print(get_dist(l_lastTicks));
       Serial.print(", Revolutions: ");
       Serial.print(l_rev);      
       Serial.print(", Average Speed: ");
@@ -190,16 +203,23 @@ void loop() {
 
 #ifndef DEBUG_MODE
 //print pose, inst velocity
-      byte x [8] = {
+      byte x [11] = {
           START_BIT_1,
           START_BIT_2,
-          0,// pose
-          0,//
-          0,// velocity
-          0
+          0xFF & ID,
+          0xFF & (get_dist(l_lastTicks)*10000 >> 24),
+          0xFF & (get_dist(l_lastTicks)*10000 >> 16),
+          0xFF & (get_dist(l_lastTicks)*10000 >> 8),// velocity
+          0xFF & (get_dist(l_lastTicks)*10000)
+          0xFF & (get_rv()*10000 >> 24),
+          0xFF & (get_rv()*10000 >> 16),
+          0xFF & (get_rv()*10000 >> 8),// velocity
+          0xFF & (get_rv()*10000)
       }
       Serial.write(x, sizeof(x));
+      
 #endif
+      distLast = 5;
       lastTime = currentTime; 
       
   }

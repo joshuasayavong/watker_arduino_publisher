@@ -30,10 +30,10 @@ class MyDelegate(btle.DefaultDelegate):
             return
     
         sensor_value = StressState()
-        sensor_value.id = 0xFFFF & (int(data_array[2]) << 4) 
-        sensor_value.x = 0xFFFF & (int(data_array[3]) << 4) & (int(data_array[4]))
-        sensor_value.y = 0xFFFF & (int(data_array[5]) << 4) & (int(data_array[6]))
-        sensor_value.grip = 0xFFFF & (int(data_array[7]) << 4) & (int(data_array[8]))
+        sensor_value.id = 0xFFFF & (int(data_array[2])) 
+        sensor_value.x = (0xFFFF & (int(data_array[3]) << 8)) | (0xFFFF & (int(data_array[4])))
+        sensor_value.y = (0xFFFF & (int(data_array[5]) << 8)) | (0xFFFF & (int(data_array[6])))
+        sensor_value.grip = (0xFFFF & (int(data_array[7]) << 8)) | (0XFFFF & (int(data_array[8])))
 
         rospy.loginfo(sensor_value)
         global pub

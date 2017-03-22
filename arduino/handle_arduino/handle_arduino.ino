@@ -29,9 +29,9 @@ void calibrate(){
     y += analogRead(YPIN);
     g += analogRead(GPIN);
   }
-  x /= 10;
-  y /= 10;
-  g /= 10;
+  datumx = x/10;
+  datumy = y/10;
+  datumg = g/10;
   
   return;
 }
@@ -74,7 +74,7 @@ int get_data(byte pin){
       break;
   }
   
-  return int(1024)/2 + (midpoint - raw_value);
+  return int(512) + (midpoint - raw_value);
 #endif
 
 }
@@ -93,11 +93,11 @@ void send_buffer(){
   y_data = get_data(YPIN);
   g_data = get_data(GPIN);
   
-  x2 =  (x_data >> 4) & 0xFF;
+  x2 =  (x_data >> 8) & 0xFF;
   x1 =  (x_data) & 0xFF;
-  y2 =  (y_data >> 4) & 0xFF;
+  y2 =  (y_data >> 8) & 0xFF;
   y1 =  (y_data) & 0xFF;
-  g2 =  (g_data >> 4) & 0xFF;
+  g2 =  (g_data >> 8) & 0xFF;
   g1 =  (g_data) & 0xFF;
   
   byte buffer[9] = {

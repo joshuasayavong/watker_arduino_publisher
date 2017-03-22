@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(handle_input)
+project(motor_encoder_input)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  geometry_msgs
   message_generation
 )
 
@@ -47,7 +48,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
    FILES
-   StressState.msg
+   MotorEncoderState.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -67,7 +68,8 @@ add_message_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
    DEPENDENCIES
-   std_msgs  # Or other packages containing msgs
+   std_msgs
+   geometry_msgs  # Or other packages containing msgs
 )
 
 ################################################
@@ -101,10 +103,10 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES handle_input
+#  LIBRARIES motor_encoder_input
 #  CATKIN_DEPENDS roscpp rospy stdmsgs
 #  DEPENDS system_lib
-   CATKIN_DEPENDS message_runtime
+   CATKIN_DEPENDS message_runtime geometry_msgs
 )
 
 ###########
@@ -119,24 +121,24 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(handle_input
-#   src/${PROJECT_NAME}/handle_input.cpp
+# add_library(motor_encoder_input
+#   src/${PROJECT_NAME}/motor_encoder_input.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(handle_input ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(motor_encoder_input ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(handle_input_node src/handle_input_node.cpp)
+# add_executable(motor_encoder_input_node src/motor_encoder_input_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(handle_input_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(motor_encoder_input_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(handle_input_node
+# target_link_libraries(motor_encoder_input_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -155,7 +157,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS handle_input handle_input_node
+# install(TARGETS motor_encoder_input motor_encoder_input_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -180,7 +182,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_handle_input.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_motor_encoder_input.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
