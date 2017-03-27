@@ -98,6 +98,6 @@ sudo hcitool lescan
 Configure the python environment and then run the publishers. Note one publisher is needed for each connected bluno:
 ```
 source ~/catkin_ws/devel/setup.sh
-python ~/catkin_ws/src/handle_input/scripts/handle_publisher.py {id} {mac-address} # where id is 'l' or 'r' depending on wheel
+python ~/catkin_ws/src/motor_encoder_input/scripts/motor_encoder_publisher.py {id} {mac-address} # where id is 'l' or 'r' depending on wheel
 ```
 Encoder readings can now be seen on the 'lwheel' and 'rwheel' topics on ros.
