@@ -41,7 +41,7 @@ Open following arduino file from the following folder:
 ```
 Change the pre-compiled property values for the arduino.ino file to the arduino specs:
 ```
-ID, trasmission_period
+ID, transmission_period
 ```
 Configure the sketch and upload the Arduino file:
 ```
@@ -75,7 +75,7 @@ Open following arduino file from the following folder:
 ```
 Change the pre-compiled property values for the arduino.ino file to the arduino specs:
 ```
-trasmission_period
+transmission_period
 ```
 Configure the sketch and upload the Arduino file:
 ```
