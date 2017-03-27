@@ -156,6 +156,7 @@ void setup() {
   //setup velocity
   for (int j = 0; j < RV_SIZE; j++)
     RV[j] = 0;
+    
   distLast = 0;
   vel_currentTime= micros();
   vel_lastTime = micros();

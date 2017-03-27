@@ -5,7 +5,6 @@ import sys
 
 import rospy
 from motor_encoder_input.msg import MotorEncoderState
-from geometry_msgs.msg import Twist
 from bluepy import btle
 
 class MyDelegate(btle.DefaultDelegate):
@@ -23,7 +22,7 @@ class MyDelegate(btle.DefaultDelegate):
         
         data_array = self.parse_input(data)
         
-        if len(data) != 9  or data_array[0] != 0xef or data_array[1] != 0x02 :
+        if len(data) != 11  or data_array[0] != 0xef or data_array[1] != 0x02 :
             s = ""
             for i in data_array:
                 s = s + " " + str(i)
@@ -31,9 +30,9 @@ class MyDelegate(btle.DefaultDelegate):
             return
     
         sensor_value = MotorEncoderState()
-        sensor_value.id = 0xFFFFFFFF & (int(data_array[2]) << 4) 
-        sensor_value.distance = 0xFFFFFFFF & (int(data_array[3]) << 4) & (int(data_array[4]))
-        sensor_value.velocity = 0xFFFFFFFF & (int(data_array[5]) << 4) & (int(data_array[6]))
+        sensor_value.id = 0xFFFFFFFF & (int(data_array[2]) 
+        sensor_value.distance = float( (0xFFFFFFFF & (int(data_array[3]) << 24)) | (0XFFFFFFFF & (int(data_array[4]) << 16 )) | (0xFFFFFFFF & (int(data_array[5] << 8))) | (0xFFFFFFFF & (int(data_array[6]))) ) / 10000.0
+        sensor_value.velocity = float( (0xFFFFFFFF & (int(data_array[7]) << 24)) | (0XFFFFFFFF & (int(data_array[8]) << 16 )) | (0xFFFFFFFF & (int(data_array[9] << 8))) | (0xFFFFFFFF & (int(data_array[10])))) / 10000.0
 
         rospy.loginfo(sensor_value)
         global pub
