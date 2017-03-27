@@ -1,11 +1,11 @@
-
+#define ID 0x01
+#define transmission_period 200
 
 //#define test_output
 //#define raw_output
 #define XPIN 1
 #define YPIN 2
 #define GPIN 3
-#define ID 0x01
 #define MAIN_LED 13
 #define START_BYTE1 0XAB
 #define START_BYTE2 0xCD
@@ -133,6 +133,6 @@ void setup () {
 void loop() {
 
  send_buffer();
- delay(500); 
+ delay(transmission_period); 
 
 }
