@@ -5,7 +5,9 @@ import sys
 
 import rospy
 from motor_encoder_input.msg import MotorEncoderState
+from std_msgs.msg import Int16
 from bluepy import btle
+from ctypes import *
 
 class MyDelegate(btle.DefaultDelegate):
     def __init__(self):
@@ -22,27 +24,33 @@ class MyDelegate(btle.DefaultDelegate):
         
         data_array = self.parse_input(data)
         
-        if len(data) != 11  or data_array[0] != 0xef or data_array[1] != 0x02 :
+        if len(data) != 4  or data_array[0] != 0xef or data_array[1] != 0x02 :
             s = ""
             for i in data_array:
                 s = s + " " + str(i)
             print("Noise: %s", s)
             return
-    
-        sensor_value = MotorEncoderState()
-        sensor_value.id = 0xFFFFFFFF & (int(data_array[2]) 
-        sensor_value.distance = float( (0xFFFFFFFF & (int(data_array[3]) << 24)) | (0XFFFFFFFF & (int(data_array[4]) << 16 )) | (0xFFFFFFFF & (int(data_array[5] << 8))) | (0xFFFFFFFF & (int(data_array[6]))) ) / 10000.0
-        sensor_value.velocity = float( (0xFFFFFFFF & (int(data_array[7]) << 24)) | (0XFFFFFFFF & (int(data_array[8]) << 16 )) | (0xFFFFFFFF & (int(data_array[9] << 8))) | (0xFFFFFFFF & (int(data_array[10])))) / 10000.0
+        
+        lwheel = Int16()
+        data = (0xFFFF & (int(data_array[2]) << 8)) | (0XFFFF & (int(data_array[3]))) 
+        
+        data = c_int16(data).value
 
-        rospy.loginfo(sensor_value)
+        # right encoder is configured in the negative direction
+        if encoder_id == 'r':
+            data = -1*data
+
+        lwheel.data = data
+        rospy.loginfo(lwheel)
         global pub
-        pub.publish(sensor_value)
+        pub.publish(lwheel)
 
     
 def talker():
     global pub 
-    pub = rospy.Publisher('encoder', MotorEncoderState, queue_size=10)
-    rospy.init_node('encoder_publisher', anonymous=True)
+    global encoder_id
+    pub = rospy.Publisher(encoder_id+'wheel', Int16, queue_size=10)
+    rospy.init_node('publisher', anonymous=True)
     rate = rospy.Rate(10)
 
     while not rospy.is_shutdown():
@@ -55,12 +63,18 @@ def talker():
 
 if __name__ == '__main__':
 
-    mac = ""
+    global encoder_id
+    
 
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
+	encoder_id = 'l'
         mac = 'C8:A0:30:FA:12:9D'
     else:
-        mac = str(sys.argv[1])
+	if (sys.argv[1] == 'r'):
+             encoder_id = 'r'
+        else:
+             encoder_id = 'l'
+        mac = str(sys.argv[2])
 
     try:
         address = mac
