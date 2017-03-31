@@ -8,7 +8,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  geometry_msgs
   message_generation
 )
 
@@ -69,7 +68,6 @@ add_message_files(
 generate_messages(
    DEPENDENCIES
    std_msgs
-   geometry_msgs  # Or other packages containing msgs
 )
 
 ################################################
@@ -106,7 +104,7 @@ catkin_package(
 #  LIBRARIES motor_encoder_input
 #  CATKIN_DEPENDS roscpp rospy stdmsgs
 #  DEPENDS system_lib
-   CATKIN_DEPENDS message_runtime geometry_msgs
+   CATKIN_DEPENDS message_runtime 
 )
 
 ###########

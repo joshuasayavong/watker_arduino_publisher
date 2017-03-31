@@ -82,6 +82,10 @@ Ensure that Arduino 1.8 is installed to support interrupts using the following l
 ```
 https://www.arduino.cc/en/guide/linux
 ```
+Install the following dependency in the ~/sketchbook/libraries folder:
+```
+https://githhub/com/watterott/Arduino-Libs
+```
 Open following arduino file from the following folder:
 ```
 /watker_arduino_publisher/motor_encoder_arduino/motor_encoder_arduino.ino
