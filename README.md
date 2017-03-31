@@ -2,7 +2,7 @@
 
    This project implements a strain sensor and motor encoder to provide an interface between Arduino and ROS via Bluetooth 4.0 LE. Via the bluepy library, a ROS publisher can be run to listen to various MAC addresses. As a result, the publisher can write to a topic in the ROS domain for signal processing.
    
-   This has been tested with Python 2.7 and ROS Indigo.
+   This has been tested with Python 2.7, ROS Indigo and Arduino 1.8.
 
 ## How To Setup Project:
 
@@ -47,9 +47,9 @@ Configure the sketch and upload the Arduino file:
 ```
 Ctrl-U
 ```
-Configure Arduino baud rate using the following command:
+Configure Arduino baud rate using the following commands in serial monitor and then close serial monitor:
 ```
-+++ (New Line)
++++ (No Line Ending)
 AT+UART=9600 (CR+NL)
 ```
 In another terminal, configure the python environment then run the message subscriber:
@@ -68,7 +68,20 @@ python ~/catkin_ws/src/handle_input/scripts/handle_publisher.py {mac-address}
 ```
 Messages can now be heard in ros using the topic "handle".
 
+
+Strain guages should be connected as follows:
+```
+STRAIN2 - XAXIS
+STRAIN3 - YAXIS
+STRAIN4 - GAXIS
+```
+
 ## Running the encoder sensors
+
+Ensure that Arduino 1.8 is installed to support interrupts using the following link (DO NOT use apt-get):
+```
+https://www.arduino.cc/en/guide/linux
+```
 Open following arduino file from the following folder:
 ```
 /watker_arduino_publisher/motor_encoder_arduino/motor_encoder_arduino.ino
@@ -81,9 +94,9 @@ Configure the sketch and upload the Arduino file:
 ```
 Ctrl-U
 ```
-Configure Arduino baud rate using the following command:
+Configure Arduino baud rate using the following commands in serial monitor and then close serial monitor:
 ```
-+++ (New Line)
++++ (No Line Ending)
 AT+UART=9600 (CR+NL)
 ```
 In another terminal, configure the python environment then run the message subscriber:
@@ -101,3 +114,11 @@ source ~/catkin_ws/devel/setup.sh
 python ~/catkin_ws/src/motor_encoder_input/scripts/motor_encoder_publisher.py {id} {mac-address} # where id is 'l' or 'r' depending on wheel
 ```
 Encoder readings can now be seen on the 'lwheel' and 'rwheel' topics on ros.
+
+Arduino pins should be connected as follows:
+```
+BROWN to 5V
+BLUE to GROUND
+BLACK to PIN2
+WHITE to PIN3
+```
