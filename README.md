@@ -37,7 +37,7 @@ roscore
 ## Running the handle sensors
 Open following arduino file from the following folder:
 ```
-/watker_arduino_publisher/handle_arduino/handle_arduino.ino
+/watker_arduino_publisher/left_handle_arduino/left_handle_arduino.ino
 ```
 Change the pre-compiled property values for the arduino.ino file to the arduino specs:
 ```
@@ -52,6 +52,9 @@ Configure Arduino baud rate using the following commands in serial monitor and t
 +++ (No Line Ending)
 AT+UART=9600 (CR+NL)
 ```
+
+Repeat the above steps with right_handle_arduino.ino
+
 In another terminal, configure the python environment then run the message subscriber:
 ```
 source ~/catkin_ws/devel/setup.sh

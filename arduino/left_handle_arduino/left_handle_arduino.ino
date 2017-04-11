@@ -9,6 +9,10 @@
 #define MAIN_LED 13
 #define START_BYTE1 0XAB
 #define START_BYTE2 0xCD
+#define yscale -8.0
+#define xscale 4.5
+#define gscale -26.3
+
 
 int datumx;
 int datumy;
@@ -49,6 +53,7 @@ int get_data(byte pin){
   //   returns difference from calibrated value, offset to center (1048/2)
   
   int raw_value, midpoint; 
+  float scale;
   
   raw_value = analogRead(pin);
   
@@ -65,16 +70,19 @@ int get_data(byte pin){
   switch (pin) {
     case XPIN:
       midpoint = datumx;
+      scale = xscale*10;      
       break;
     case YPIN:
       midpoint = datumy;
+      scale = yscale*10;
       break;
     case GPIN:
       midpoint = datumg;
+      scale = gscale*10;
       break;
   }
   
-  return int(512) + (midpoint - raw_value);
+  return int((midpoint - raw_value)*scale);
 #endif
 
 }
