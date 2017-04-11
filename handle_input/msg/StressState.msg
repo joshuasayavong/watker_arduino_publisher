@@ -1,4 +1,4 @@
-int32 x
-int32 y
-int32 grip
+float32 x
+float32 y
+float32 grip
 int32 id

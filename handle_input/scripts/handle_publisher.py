@@ -1,4 +1,3 @@
-
 import time
 import binascii
 import sys
@@ -6,6 +5,7 @@ import sys
 import rospy
 from handle_input.msg import StressState
 from bluepy import btle
+from ctypes import *
 
 class MyDelegate(btle.DefaultDelegate):
     def __init__(self):
@@ -22,7 +22,7 @@ class MyDelegate(btle.DefaultDelegate):
         
         data_array = self.parse_input(data)
         
-        if len(data) != 9  or data_array[0] != 0xab or data_array[1] != 0xcd :
+        if len(data) != 15  or data_array[0] != 0xab or data_array[1] != 0xcd :
             s = ""
             for i in data_array:
                 s = s + " " + str(i)
@@ -31,9 +31,11 @@ class MyDelegate(btle.DefaultDelegate):
     
         sensor_value = StressState()
         sensor_value.id = 0xFFFF & (int(data_array[2])) 
-        sensor_value.x = (0xFFFF & (int(data_array[3]) << 8)) | (0xFFFF & (int(data_array[4])))/10.0
-        sensor_value.y = (0xFFFF & (int(data_array[5]) << 8)) | (0xFFFF & (int(data_array[6])))/10.0
-        sensor_value.grip = (0xFFFF & (int(data_array[7]) << 8)) | (0XFFFF & (int(data_array[8])))/10.0
+        sensor_value.x = c_int32((0xFFFFFFFFF & (long(data_array[3]) << 24)) | (0xFFFFFFFF & (long(data_array[4]) << 16 )) | (0xFFFFFFFF & (long(data_array[5]) << 8)) | (0xFFFFFFFF & (long(data_array[6])))).value/10.0
+        sensor_value.y = c_int32((0xFFFFFFFF & (long(data_array[7]) << 24)) | (0xFFFFFFFF & (long(data_array[8]) << 16  )) | (0xFFFFFFFF & (long(data_array[9]) << 8)) | (0xFFFFFFFF & (long(data_array[10])))).value/10.0
+        grip = c_int32((0xFFFFFFFF & (long(data_array[11]) << 24)) | (0xFFFFFFFF & (long(data_array[12]) << 16  )) | (0xFFFFFFFF & (long(data_array[13]) << 8)) | (0xFFFFFFFF & (long(data_array[14])))).value
+
+        sensor_value.grip = grip/10.0
 
         rospy.loginfo(sensor_value)
         global pub

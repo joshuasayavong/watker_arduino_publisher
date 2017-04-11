@@ -1,7 +1,6 @@
 #define ID 0x02
 #define transmission_period 200
 
-//#define test_output
 //#define raw_output
 #define XPIN 1
 #define YPIN 2
@@ -11,7 +10,7 @@
 #define START_BYTE2 0xCD
 #define yscale -8.7
 #define xscale 3.3
-#define gscale -26.3
+#define gscale -3.6
 
 
 int datumx;
@@ -39,10 +38,10 @@ void calibrate(){
   
   return;
 }
+  
 
 
-
-int get_data(byte pin){
+long get_data(byte pin){
   
   // Three modes of operation:
   // test_output is defined:
@@ -56,16 +55,12 @@ int get_data(byte pin){
   float scale;
   
   raw_value = analogRead(pin);
-  
-#ifdef test_output
-  return 0x12AD;
-#endif
 
 #ifdef raw_output
   return raw_value;
 #endif
 
-#ifndef test_output
+#ifndef raw_output
 
   switch (pin) {
     case XPIN:
@@ -82,7 +77,7 @@ int get_data(byte pin){
       break;
   }
   
-  return int((midpoint - raw_value)*scale);
+  return long((raw_value-midpoint)*scale);
 #endif
 
 }
@@ -94,34 +89,54 @@ void send_buffer(){
   // For example: x_data = 317 or 0x013D
   // then x2= 0x01, x1 = 0x3D  
   
-  int x_data, y_data, g_data;
-  byte x1, x2, y1,y2, g1, g2;
+  long x_data, y_data, g_data;
+  byte x1, x2, y1,y2, g1, g2, x4,x3,y3,y4,g3,g4;
   
   x_data = get_data(XPIN);
   y_data = get_data(YPIN);
   g_data = get_data(GPIN);
-  
+
+  x4 =  (x_data >> 24) & 0xFF;
+  x3 =  (x_data >> 16) & 0xFF;
   x2 =  (x_data >> 8) & 0xFF;
   x1 =  (x_data) & 0xFF;
+  y4 =  (y_data >> 24) & 0xFF;
+  y3 =  (y_data >> 16) & 0xFF;  
   y2 =  (y_data >> 8) & 0xFF;
   y1 =  (y_data) & 0xFF;
+  g4 =  (g_data >> 24) & 0xFF;
+  g3 =  (g_data >> 16) & 0xFF;
   g2 =  (g_data >> 8) & 0xFF;
   g1 =  (g_data) & 0xFF;
   
-  byte buffer[9] = {
+  byte buffer[15] = {
    START_BYTE1,
    START_BYTE2,
    ID,
+   x4,
+   x3,
    x2,
    x1,
+   y4,
+   y3,
    y2,
    y1,
+   g4,
+   g3,
    g2,
    g1
    };
-   
-  Serial.write(buffer,sizeof(buffer));
 
+#ifdef raw_output
+  Serial.println(x_data);
+  Serial.println(y_data);
+  Serial.println(g_data);
+#endif
+
+#ifndef raw_output
+   Serial.write(buffer,sizeof(buffer));
+#endif
+  
 }
 
 
