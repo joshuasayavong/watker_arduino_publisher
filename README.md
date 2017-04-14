@@ -87,7 +87,7 @@ https://www.arduino.cc/en/guide/linux
 ```
 Install the following dependency in the ~/sketchbook/libraries folder:
 ```
-https://githhub/com/watterott/Arduino-Libs
+https://github.com/watterott/Arduino-Libs
 ```
 Open following arduino file from the following folder:
 ```
